@@ -5,13 +5,16 @@ class MultiplicationExample extends StatelessWidget {
   final int totalExamples;
   final String numOne;
   final String numTwo;
+  final String userAnswer;
 
-  MultiplicationExample({
+  const MultiplicationExample({
+    Key? key,
     required this.exampleNumber,
     required this.totalExamples,
     required this.numOne,
     required this.numTwo,
-  });
+    required this.userAnswer,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class MultiplicationExample extends StatelessWidget {
             fontWeight: FontWeight.w300,
           ),
         ),
-        GridPaperWidget(numOne: numOne, numTwo: numTwo),
+        GridPaperWidget(numOne: numOne, numTwo: numTwo, userAnswer: userAnswer),
       ],
     );
   }
@@ -35,8 +38,14 @@ class MultiplicationExample extends StatelessWidget {
 class GridPaperWidget extends StatelessWidget {
   final String numOne;
   final String numTwo;
+  final String userAnswer;
 
-  GridPaperWidget({required this.numOne, required this.numTwo});
+  const GridPaperWidget({
+    Key? key,
+    required this.numOne,
+    required this.numTwo,
+    required this.userAnswer,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +67,9 @@ class GridPaperWidget extends StatelessWidget {
                   for (int col = 0; col < 10; col++)
                     Expanded(
                       child: Container(
-                        margin: EdgeInsets.all(1.0),
+                        margin: const EdgeInsets.all(1.0),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.amber),
-                          // color: const Color.fromARGB(255, 212, 211, 211)),
                         ),
                         child: Center(
                           child: _buildCellContent(row, col, fontSize),
@@ -87,8 +95,8 @@ class GridPaperWidget extends StatelessWidget {
         content = numTwo;
       } else if (col == 5) {
         content = '=';
-      } else if (col == 6) {
-        content = '?';
+      } else if (col > 5 && col - 6 < userAnswer.length) {
+        content = userAnswer[col - 6];
       }
     }
     return Text(

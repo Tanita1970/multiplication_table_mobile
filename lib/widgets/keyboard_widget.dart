@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
 
 class KeyboardWidget extends StatelessWidget {
+  final Function(String) onKeyboardTap;
+  final VoidCallback onSubmit;
+  final VoidCallback onBackspace;
+  final VoidCallback onClear;
+
+  const KeyboardWidget({
+    Key? key,
+    required this.onKeyboardTap,
+    required this.onSubmit,
+    required this.onBackspace,
+    required this.onClear,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -17,27 +30,27 @@ class KeyboardWidget extends StatelessWidget {
             return KeyboardButtonWidget(
               text: '${index + 1}',
               onPressed: () {
-                print('Button ${index + 1} pressed');
+                onKeyboardTap('${index + 1}');
               },
             );
           }),
           KeyboardButtonWidget(
             icon: Icons.backspace_outlined,
-            onPressed: () {
-              print('Backspace key pressed');
-            },
+            onPressed: onBackspace,
           ),
           KeyboardButtonWidget(
             text: '0',
             onPressed: () {
-              print('Button 0 pressed');
+              onKeyboardTap('0');
             },
           ),
           KeyboardButtonWidget(
             icon: Icons.check_outlined,
-            onPressed: () {
-              print('Enter key pressed');
-            },
+            onPressed: onSubmit,
+          ),
+          KeyboardButtonWidget(
+            text: 'C',
+            onPressed: onClear,
           ),
         ],
       ),

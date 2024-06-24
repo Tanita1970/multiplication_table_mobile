@@ -1,18 +1,21 @@
+import 'package:hive/hive.dart';
+
+part 'task.g.dart';
+
+@HiveType(typeId: 1)
 class Task {
+  @HiveField(0)
   final int numOne;
+
+  @HiveField(1)
   final int numTwo;
+
+  @HiveField(2)
   final int result;
 
-  const Task({
+  Task({
     required this.numOne,
     required this.numTwo,
     required this.result,
   });
-
-  // Это переопределение функции toString() я создала на всякий случай -
-  // для возможного контроля в процессе разработки приложения.
-  @override
-  String toString() {
-    return '$numOne * $numTwo = $result';
-  }
 }
