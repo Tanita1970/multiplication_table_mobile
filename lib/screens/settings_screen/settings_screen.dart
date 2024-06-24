@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'sliders.dart';
-import 'other_settings.dart';
+import 'package:multiplication_table_mobile/providers/settings_provider.dart';
+import 'package:multiplication_table_mobile/screens/settings_screen/sliders.dart';
+import 'package:provider/provider.dart'; // Импортируем пакет provider
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -8,74 +9,52 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  RangeValues _firstNumberRange = const RangeValues(2, 9);
-  RangeValues _secondNumberRange = const RangeValues(2, 9);
-
-  String _selectedMode = 'Таймер';
-  final List<String> _modes = ['Таймер', 'Количество примеров', 'Вся таблица'];
-
-  double _minutes = 0;
-  double _seconds = 30;
-  double _exampleCount = 10;
-
-  @override
-  void initState() {
-    super.initState();
-    setDefaultValues();
-  }
-
-  void setDefaultValues() {
-    setState(() {
-      _firstNumberRange = const RangeValues(2, 9);
-      _secondNumberRange = const RangeValues(2, 9);
-      _minutes = 0;
-      _seconds = 30;
-      _selectedMode = 'Таймер';
-    });
-  }
+  // Эти переменные больше не нужны, так как мы будем использовать SettingsProvider для управления состоянием
+  // RangeValues _firstNumberRange = const RangeValues(2, 9);
+  // RangeValues _secondNumberRange = const RangeValues(2, 9);
+  // String _selectedMode = 'Таймер';
+  // final List<String> _modes = ['Таймер', 'Количество примеров', 'Вся таблица'];
+  // double _minutes = 0;
+  // double _seconds = 30;
+  // double _exampleCount = 10;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ), // Задайте нужный цвет фона
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: const Text('Настройка тренажёра'),
-          backgroundColor: Colors.amber,
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              setDigitsRangeSettings(context),
-              const SizedBox(height: 20),
-              setTrainingModes(
-                  context), // Другой контейнер для дополнительных настроек
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: setDefaultValues,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                ),
-                child: const Text(
-                  'Установить значения по умолчанию',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
-          ),
+    // Получаем доступ к SettingsProvider
+    final settingsProvider = Provider.of<SettingsProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Настройка тренажёра'),
+        backgroundColor: const Color.fromARGB(255, 236, 235, 235),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            // Передаем settingsProvider в методы для отображения и обновления настроек
+            setDigitsRangeSettings(settingsProvider),
+            const SizedBox(height: 20),
+            setOtherSettings(
+                settingsProvider), // Другой контейнер для дополнительных настроек
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Устанавливаем значения по умолчанию при нажатии кнопки
+                settingsProvider.setFirstNumberRange(const RangeValues(2, 9));
+                settingsProvider.setSecondNumberRange(const RangeValues(2, 9));
+                settingsProvider.setMinutes(0);
+                settingsProvider.setSeconds(30);
+              },
+              child: const Text('Установить значения по умолчанию'),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget setDigitsRangeSettings(BuildContext context) {
+  Widget setDigitsRangeSettings(SettingsProvider settingsProvider) {
     return Stack(
       children: [
         Container(
@@ -86,27 +65,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
-            border: Border.all(width: 0.8, color: Colors.green),
+            border: Border.all(width: 0.8, color: Colors.grey),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Используем значения из SettingsProvider для отображения текущих настроек и обновления их при изменении
               buildNumberRangeSlider(
-                  context, 'Первая цифра', _firstNumberRange, Colors.green,
-                  (RangeValues newRange) {
-                setState(() {
-                  _firstNumberRange = newRange;
-                });
-              }),
+                context,
+                'Первая цифра',
+                settingsProvider.firstNumberRange,
+                Colors.green,
+                (RangeValues newRange) {
+                  settingsProvider.setFirstNumberRange(newRange);
+                },
+              ),
               const SizedBox(height: 10),
               buildNumberRangeSlider(
-                  context, 'Вторая цифра', _secondNumberRange, Colors.green,
-                  (RangeValues newRange) {
-                setState(() {
-                  _secondNumberRange = newRange;
-                });
-              }),
+                context,
+                'Вторая цифра',
+                settingsProvider.secondNumberRange,
+                Colors.green,
+                (RangeValues newRange) {
+                  settingsProvider.setSecondNumberRange(newRange);
+                },
+              ),
             ],
           ),
         ),
@@ -118,7 +102,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: const Text(
               'Диапазон изменения цифр',
-              style: TextStyle(fontSize: 16, color: Colors.green),
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ),
@@ -126,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget setTrainingModes(BuildContext context) {
+  Widget setOtherSettings(SettingsProvider settingsProvider) {
     return Stack(
       children: [
         Container(
@@ -137,32 +121,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
             borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
-            border: Border.all(width: 0.8, color: Colors.blue),
+            border: Border.all(width: 0.8, color: Colors.grey),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                'Выбор режима тренировки',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300),
+              ),
               const SizedBox(height: 10),
               DropdownButton<String>(
-                dropdownColor: Colors.amber,
-                value: _selectedMode,
-                items: _modes.map((String mode) {
+                value: settingsProvider.selectedMode,
+                items: settingsProvider.modes.map((String mode) {
                   return DropdownMenuItem<String>(
                     value: mode,
                     child: Text(mode),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedMode = newValue!;
-                  });
+                  settingsProvider.setSelectedMode(newValue!);
                 },
               ),
-              if (_selectedMode == 'Таймер') buildTimerSettings(context),
-              if (_selectedMode == 'Количество примеров')
-                buildExamplesCountSettings(context),
-              if (_selectedMode == 'Вся таблица') buildFullTableSettings(),
+              if (settingsProvider.selectedMode == 'Таймер')
+                buildTimerSettings(settingsProvider),
+              if (settingsProvider.selectedMode == 'Количество примеров')
+                buildExamplesCountSettings(settingsProvider),
+              if (settingsProvider.selectedMode == 'Вся таблица')
+                buildFullTableSettings(),
             ],
           ),
         ),
@@ -174,7 +161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: const Text(
               'Режим тренировки',
-              style: TextStyle(fontSize: 16, color: Colors.blue),
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ),
@@ -182,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget buildTimerSettings(BuildContext context) {
+  Widget buildTimerSettings(SettingsProvider settingsProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,26 +182,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
         buildSlider(
           context,
           'Минуты',
-          _minutes,
+          settingsProvider.minutes,
           0,
           9,
           (double newValue) {
-            setState(() {
-              _minutes = newValue;
-            });
+            settingsProvider.setMinutes(newValue);
           },
           divisions: 9,
         ),
         buildSlider(
           context,
           'Секунды',
-          _seconds,
+          settingsProvider.seconds,
           0,
           60,
           (double newValue) {
-            setState(() {
-              _seconds = newValue;
-            });
+            settingsProvider.setSeconds(newValue);
           },
           divisions: 6,
           labels: List.generate(7, (index) => (index * 10).toString()),
@@ -223,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget buildExamplesCountSettings(BuildContext context) {
+  Widget buildExamplesCountSettings(SettingsProvider settingsProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -236,16 +219,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
         buildSlider(
           context,
           'Количество примеров',
-          _exampleCount,
+          settingsProvider.exampleCount,
           10,
           50,
           (double newValue) {
-            setState(() {
-              _exampleCount = newValue;
-            });
+            settingsProvider.setExampleCount(newValue);
           },
           divisions: 8,
           labels: List.generate(9, (index) => (index * 5 + 10).toString()),
+        ),
+      ],
+    );
+  }
+
+  Widget buildFullTableSettings() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        SizedBox(height: 10),
+        Text(
+          'Режим полной таблицы: решите все примеры таблицы умножения.',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300),
         ),
       ],
     );

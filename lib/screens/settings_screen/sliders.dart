@@ -54,14 +54,14 @@ Widget buildSlider(BuildContext context, String label, double value, double min,
                 ? labels
                     .map((label) => Text(
                           label,
-                          style: TextStyle(color: Colors.blue),
+                          style: const TextStyle(color: Colors.blue),
                         ))
                     .toList()
                 : List.generate(
                     (max - min).toInt() + 1,
                     (index) => Text(
                       '$index',
-                      style: TextStyle(color: Colors.blue),
+                      style: const TextStyle(color: Colors.blue),
                     ),
                   ),
           ),
