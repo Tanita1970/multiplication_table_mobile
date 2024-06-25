@@ -8,13 +8,13 @@ class MultiplicationExample extends StatelessWidget {
   final String userAnswer;
 
   const MultiplicationExample({
-    Key? key,
+    super.key,
     required this.exampleNumber,
     required this.totalExamples,
     required this.numOne,
     required this.numTwo,
     required this.userAnswer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class MultiplicationExample extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Пример $exampleNumber из $totalExamples',
+          'Всего осталось решить примеров: $totalExamples',
           style: const TextStyle(
             fontSize: 14,
             color: Colors.black,
@@ -41,11 +41,11 @@ class GridPaperWidget extends StatelessWidget {
   final String userAnswer;
 
   const GridPaperWidget({
-    Key? key,
+    super.key,
     required this.numOne,
     required this.numTwo,
     required this.userAnswer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

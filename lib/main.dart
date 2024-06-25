@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:multiplication_table_mobile/models/multiplication_result.dart';
+import 'package:multiplication_table_mobile/models/task.dart';
+import 'package:multiplication_table_mobile/providers/settings_provider.dart';
+import 'package:multiplication_table_mobile/screens/settings_screen/settings_screen.dart';
+import 'package:multiplication_table_mobile/screens/training_screen.dart';
 import 'package:provider/provider.dart';
-import 'models/multiplication_result.dart';
-import 'models/task.dart';
-import 'providers/settings_provider.dart';
 import 'repositories/tasks_manager.dart';
-import 'screens/settings_screen/settings_screen.dart';
-import 'screens/training_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Настройка Hive
   await Hive.initFlutter();
-  Hive.registerAdapter(MultiplicationResultAdapter());
-  Hive.registerAdapter(TaskAdapter());
-  await Hive.openBox<MultiplicationResult>('resultsBox');
-  await Hive.openBox<Task>('tasksBox');
+  Hive.registerAdapter(MultiplicationResultAdapter()); // Регистрация адаптера
+  Hive.registerAdapter(TaskAdapter()); // Регистрация адаптера Task
+  await Hive.openBox<MultiplicationResult>(
+      'resultsBox'); // Открытие коробки для хранения результатов
+  await Hive.openBox<Task>('tasksBox'); // Открытие коробки для хранения задач
+  await Hive.openBox('settingsBox'); // Открытие коробки для хранения настроек
 
   runApp(const MultiplicationTableApp());
 }
@@ -32,7 +35,7 @@ class MultiplicationTableApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => TasksManager(
-              Hive.box<Task>('tasksBox'), 10), // Пример количества примеров
+              Hive.box<Task>('tasksBox'), 10), // Пример задания 10 задач
         ),
       ],
       child: MaterialApp.router(
@@ -50,7 +53,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       name: 'home',
       path: '/',
-      builder: (context, state) => TrainingScreen(),
+      builder: (context, state) => const TrainingScreen(),
       routes: [
         GoRoute(
           name: 'settings',
