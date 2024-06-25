@@ -49,25 +49,42 @@ class TasksManager with ChangeNotifier {
     }
   }
 
-  // Обновленный метод для обновления задач в соответствии с настройками пользователя и ограничением по количеству задач
+  // Обновленный метод для обновления задач в соответствии с настройками пользователя
+  // и ограничением по количеству задач
+  /*
+    Метод updateTasks:
+    - Мы создаем список uniqueTasks, который содержит все уникальные задачи, 
+    соответствующие диапазонам чисел.
+    - Затем мы добавляем задачи из uniqueTasks в основной список tasks до тех пор, 
+    пока не достигнем нужного количества задач (taskCount).
+    - При каждой итерации мы перемешиваем задачи в списке tasks.
+    - Если после добавления и перемешивания количество задач превышает taskCount, 
+    мы обрезаем список до нужного количества.
+*/
   void updateTasks(RangeValues firstNumberRange, RangeValues secondNumberRange,
       int taskCount) {
     correctAnswersCount = 0;
     wrongAnswersCount = 0;
-    tasks = [];
+    List<Task> uniqueTasks = [];
     for (int i = firstNumberRange.start.toInt();
         i <= firstNumberRange.end.toInt();
         i++) {
       for (int j = secondNumberRange.start.toInt();
           j <= secondNumberRange.end.toInt();
           j++) {
-        tasks.add(Task(numOne: i, numTwo: j, result: i * j));
+        uniqueTasks.add(Task(numOne: i, numTwo: j, result: i * j));
       }
     }
-    tasks.shuffle();
-    if (tasks.length > taskCount) {
-      tasks = tasks.sublist(0, taskCount);
+
+    tasks = [];
+    while (tasks.length < taskCount) {
+      tasks.addAll(uniqueTasks);
+      tasks.shuffle();
+      if (tasks.length > taskCount) {
+        tasks = tasks.sublist(0, taskCount);
+      }
     }
+
     notifyListeners();
   }
 

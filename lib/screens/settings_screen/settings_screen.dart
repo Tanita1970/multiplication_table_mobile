@@ -23,6 +23,7 @@ class SettingsScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.amber,
           title: const Text('Настройка тренажёра'),
+          automaticallyImplyLeading: false, // Убираем кнопку "Назад"
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(10),

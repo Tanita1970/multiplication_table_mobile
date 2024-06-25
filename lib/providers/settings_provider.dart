@@ -29,14 +29,20 @@ class SettingsProvider extends ChangeNotifier {
   void _loadSettings() {
     var box = Hive.box('settingsBox');
     _firstNumberRange = _listToRangeValues(
-        box.get('firstNumberRange', defaultValue: [2.0, 9.0]));
+        (box.get('firstNumberRange', defaultValue: [2.0, 9.0]) as List)
+            .cast<num>()
+            .map((e) => e.toDouble())
+            .toList());
     _secondNumberRange = _listToRangeValues(
-        box.get('secondNumberRange', defaultValue: [2.0, 9.0]));
-    _minutes = box.get('minutes', defaultValue: 0);
-    _seconds = box.get('seconds', defaultValue: 30);
+        (box.get('secondNumberRange', defaultValue: [2.0, 9.0]) as List)
+            .cast<num>()
+            .map((e) => e.toDouble())
+            .toList());
+    _minutes = (box.get('minutes', defaultValue: 0)).toDouble();
+    _seconds = (box.get('seconds', defaultValue: 30)).toDouble();
     _selectedMode =
         box.get('selectedMode', defaultValue: 'Количество примеров');
-    _exampleCount = box.get('exampleCount', defaultValue: 10);
+    _exampleCount = (box.get('exampleCount', defaultValue: 10)).toDouble();
     notifyListeners();
   }
 
