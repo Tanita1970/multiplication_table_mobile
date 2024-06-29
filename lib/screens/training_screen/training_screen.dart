@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../repositories/tasks_manager.dart';
-import '../providers/settings_provider.dart';
-import '../widgets/counter_of_answers.dart';
-import '../widgets/keyboard_widget.dart';
-import '../widgets/multiplication_example.dart';
+import '../../repositories/tasks_manager.dart';
+import '../../providers/settings_provider.dart';
+import '../../widgets/counter_of_answers.dart';
+import '../../widgets/keyboard_widget.dart';
+import '../../widgets/multiplication_example.dart';
 
 class TrainingScreen extends StatefulWidget {
   const TrainingScreen({super.key});
@@ -17,6 +17,9 @@ class TrainingScreen extends StatefulWidget {
 class _TrainingScreenState extends State<TrainingScreen> {
   String _userAnswer = '';
   bool shouldUpdateTasks = true; // Флаг для проверки, нужно ли обновлять задачи
+  bool _isAnswerChecked = false; // Флаг для проверки ответа
+  bool _isCorrect = false; // Флаг правильного ответа
+  String _correctAnswer = ''; // Правильный ответ
 
   @override
   void didChangeDependencies() {
@@ -68,12 +71,22 @@ class _TrainingScreenState extends State<TrainingScreen> {
     });
   }
 
-  // Метод для отправки ответа
+  // Метод для отправки ответа с задержкой
   void _submitAnswer(BuildContext context, TasksManager tasksManager) {
     if (_userAnswer.isNotEmpty) {
       int answer = int.parse(_userAnswer);
-      tasksManager.checkAnswer(tasksManager.tasks.first, answer);
-      _clearAnswer();
+      _isCorrect = tasksManager.tasks.first.result == answer;
+      _correctAnswer = tasksManager.tasks.first.result.toString();
+      setState(() {
+        _isAnswerChecked = true;
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        tasksManager.checkAnswer(tasksManager.tasks.first, answer);
+        setState(() {
+          _isAnswerChecked = false;
+          _clearAnswer();
+        });
+      });
     }
   }
 
@@ -89,8 +102,6 @@ class _TrainingScreenState extends State<TrainingScreen> {
   @override
   Widget build(BuildContext context) {
     final tasksManager = Provider.of<TasksManager>(context);
-    // PopScope будет использоваться для выполнения действия при возврате
-    // на экран тренировок, что позволит обновлять задачи с учетом настроек
     return PopScope(
       onPopInvoked: (value) {
         setState(() {
@@ -148,6 +159,10 @@ class _TrainingScreenState extends State<TrainingScreen> {
                     numOne: tasksManager.tasks.first.numOne.toString(),
                     numTwo: tasksManager.tasks.first.numTwo.toString(),
                     userAnswer: _userAnswer,
+                    isCorrect: _isCorrect, // Передаем статус ответа
+                    isAnswerChecked:
+                        _isAnswerChecked, // Передаем флаг проверки ответа
+                    correctAnswer: _correctAnswer, // Передаем правильный ответ
                   ),
                   // Виджет клавиатуры для ввода ответа
                   KeyboardWidget(
