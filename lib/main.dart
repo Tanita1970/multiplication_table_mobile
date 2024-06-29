@@ -5,7 +5,7 @@ import 'package:multiplication_table_mobile/models/multiplication_result.dart';
 import 'package:multiplication_table_mobile/models/task.dart';
 import 'package:multiplication_table_mobile/providers/settings_provider.dart';
 import 'package:multiplication_table_mobile/screens/settings_screen/settings_screen.dart';
-import 'package:multiplication_table_mobile/screens/training_screen.dart';
+import 'package:multiplication_table_mobile/screens/training_screen/training_screen.dart';
 import 'package:provider/provider.dart';
 import 'repositories/tasks_manager.dart';
 
